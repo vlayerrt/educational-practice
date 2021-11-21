@@ -1,2 +1,2 @@
-VideoTH.cpp - Оператор Собеля
+VideoTH.cpp - Оператор Собеля с использованием захвата видео с веб-камеры
 ![image](https://github.com/vlayerrt/educational-practice/blob/main/opencv/UjyQDR159B8.jpg)
