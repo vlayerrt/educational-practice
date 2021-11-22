@@ -184,7 +184,7 @@ string VideoCont()
 			approxPolyDP(points[i], _points, len * 0.02, true);
 			Moments m = moments(_points);
 			Point centm(m.m10 / m.m00, m.m01 / m.m00);
-			printf("Контур № %d: центр масс - х = %.2f, ó = %.2f \n", i, m.m10 / m.m00, m.m01 / m.m00);
+			printf("Контур № %d: центр масс - х = %.2f, y = %.2f \n", i, m.m10 / m.m00, m.m01 / m.m00);
 
 			// 4 вершины - прямоугольник
 			if (_points.size() == 4)
