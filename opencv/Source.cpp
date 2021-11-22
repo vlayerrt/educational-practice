@@ -88,7 +88,7 @@ string VideoCap() {
 	double dWidth = cap.get(CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
 	double dHeight = cap.get(CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
 
-	
+
 
 	string window_name = "My Camera Feed";
 	namedWindow(window_name); //create a window called "My Camera Feed"
@@ -107,7 +107,7 @@ string VideoCap() {
 			cin.get(); //Wait for any key press
 			break;
 		}
-		
+
 
 		//show the frame in the created window
 		imshow(window_name, frame);
@@ -127,7 +127,7 @@ string VideoCap() {
 		if (time_work > delay - 1) time_work = 1;
 		else time_work = delay - time_work;
 
-		
+
 		////  если обработка собелем больше чем задержка тогда получится отрицательное значение(ошибка)
 		//int vidos = waitKey(time_work);
 		//if (vidos >= 0) break;
@@ -145,6 +145,77 @@ string VideoCap() {
 	cout << "Resolution of the video : " << dWidth << " x " << dHeight << endl;
 	cout << "Задержка в мс = " << delay << endl;
 	waitKey(0);
+	return 0;
+}
+
+string VideoCont()
+{
+	//char filename[100]; // Figyres.mp4 èëè Figyres_same_colour.mp4
+	//cout << "Введите имя файла, который хотите проанализировать, и нажмите Enter" << endl;
+	//cin.getline(filename, 100);
+	//cout << "Открыт файл ";
+	//cout << filename << endl;
+
+	VideoCapture cap(0);
+	if (!cap.isOpened()) { cout << "Ошибка открытия файла"; return 0; }
+	Mat im;
+	for (; ;)
+	{
+		Mat mat, frame;
+		cap >> frame;
+		mat = frame;
+		if (mat.empty()) break;
+
+		cvtColor(mat, mat, COLOR_RGB2GRAY);
+		GaussianBlur(mat, mat, Size(3, 3), 0);
+		Canny(mat, mat, 50, 100);
+
+		vector<vector<Point>> points;
+		auto kn = getStructuringElement(MORPH_RECT, Size(3, 3));
+		dilate(mat, mat, kn);
+		findContours(mat, points, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+
+		for (int i = 0; i < points.size(); i++)
+		{
+			vector<Point> _points;
+			double len = arcLength(Mat(points[i]), true);
+			if (len < 30) continue;
+			approxPolyDP(points[i], _points, len * 0.02, true);
+			Moments m = moments(_points);
+			Point centm(m.m10 / m.m00, m.m01 / m.m00);
+			printf("Контур № %d: центр масс - х = %.2f, ó = %.2f \n", i, m.m10 / m.m00, m.m01 / m.m00);
+
+			// 4 вершины - прямоугольник
+			if (_points.size() == 4)
+			{
+				drawContours(frame, vector<vector<Point>>{_points}, 0, Scalar(255, 255, 0), 2);
+				drawMarker(frame, centm, Scalar(255, 255, 255));
+				continue;
+			}
+			// 3 вершины - треугольник
+			if (_points.size() == 3)
+			{
+				drawContours(frame, vector<vector<Point>>{_points}, 0, Scalar(0, 255, 255), 2);
+				drawMarker(frame, centm, Scalar(255, 255, 255));
+				continue;
+			}
+			// если не прямоугольник и не треугольник
+			if (_points.size() > 4 || _points.size() < 3)
+			{
+				Point2f cent;
+				float rad;
+				minEnclosingCircle(points[i], cent, rad);
+				if ((2 * rad * M_PIl - len) * (2 * rad * M_PIl - len) < len * 0.2)
+				{
+					circle(frame, cent, rad, Scalar(0, 255, 0), 2);
+				}
+				continue;
+			}
+		}
+		imshow("Распознавание", frame);
+		if (waitKey(30) >= 0) break;
+	}
 	return 0;
 }
 
@@ -250,6 +321,10 @@ int main()
 	cout << "С чем работаем:\n" << endl;
 	cout << "image" << endl;
 	cout << "video" << endl;
+	cout << "videoCap" << endl;
+	cout << "videoCont" << endl;
+
+
 	string choose;
 	cin >> choose;
 	bool check = true;
@@ -262,8 +337,19 @@ int main()
 		if (choose == "video") {
 			check = false;
 			//Video();
+			Video();
+		}
+		if (choose == "videoCap") {
+			check = false;
+			//Video();
 			VideoCap();
 		}
+		if (choose == "videoCont") {
+			check = false;
+			//Video();
+			VideoCont();
+		}
+		
 		else {
 			check = true;
 			cout << "повторите попытку." << endl;
