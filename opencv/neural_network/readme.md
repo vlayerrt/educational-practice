@@ -1,6 +1,6 @@
 # Распознавание лиц на видео с использованием нейронной сети из библиртеки openCV 
 В качестве примера работы программы использовано видео с интервью Team Spirit после победы на The International 10 2021 по Dota 2.<br>
-Исходное видео и видео с распознаванием лиц находятся в папке educational-practice/opencv/neural_network <br>
+Исходное видео и видео с распознаванием лиц: https://drive.google.com/file/d/1CvVjZRbySWvt-aXk2Hwp-g1iSVR2T69r/view?usp=sharing <br>
 
 Распознанные лица из видео:<br>
 Yatoro:<br>
